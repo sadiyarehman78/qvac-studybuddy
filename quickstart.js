@@ -19,26 +19,14 @@ const rl = readline.createInterface({
 let modelId;
 
 try {
-  console.log("Loading QVAC model...");
+  console.log("Loading local AI model...\n");
 
   modelId = await loadModel({
-    modelSrc: LLAMA_3_2_1B_INST_Q4_0,
-
-    onProgress: (progress) => {
-      const percentage = progress.percentage.toFixed(0);
-
-      if (process.stdout.isTTY) {
-        process.stdout.write(`\rDownloading: ${percentage}%`);
-      } else if (progress.percentage === 100) {
-        console.log("Downloading: 100%");
-      }
-    }
+    modelSrc: LLAMA_3_2_1B_INST_Q4_0
   });
 
-  console.log("\n\n✅ QVAC model loaded successfully!");
-  console.log("📚 StudyBuddy Local AI is ready!");
-  console.log("Ask me anything.");
-  console.log("Type 'exit' to quit.\n");
+  console.log("✅ StudyBuddy Local AI is ready!");
+  console.log("Ask anything. Type 'exit' to quit.\n");
 
   while (true) {
     const question = await rl.question("You: ");
@@ -57,8 +45,8 @@ try {
         role: "system",
         content:
           "You are StudyBuddy, a helpful local AI study assistant. " +
-          "Answer questions clearly and accurately. " +
-          "Explain difficult concepts in simple language and use examples when useful."
+          "Answer clearly and directly. Keep answers concise unless " +
+          "the user asks for detailed explanations."
       },
       {
         role: "user",
@@ -66,7 +54,7 @@ try {
       }
     ];
 
-    console.log("\nStudyBuddy:");
+    console.log("\nStudyBuddy:\n");
 
     const result = completion({
       modelId,
@@ -81,7 +69,7 @@ try {
     console.log("\n");
   }
 } catch (error) {
-  console.error("\n❌ Error:", error);
+  console.error("Error:", error.message);
 } finally {
   rl.close();
 
@@ -89,6 +77,5 @@ try {
     await unloadModel({ modelId });
   }
 
-  console.log("\nQVAC model unloaded.");
-  console.log("Thanks for using StudyBuddy Local AI!");
+  console.log("\nGoodbye!");
 }
